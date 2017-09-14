@@ -35,6 +35,11 @@ contract('Sale', (accounts) => {
     await sale.purchaseTokens({ from: actor, value: amount.mul(saleConf.price) });
   }
 
+  async function withdrawRemainder(actor) {
+    const sale = await Sale.deployed();
+    await sale.withdrawRemainder(actor);
+  }
+
   async function getTokenBalanceOf(actor) {
     const sale = await Sale.deployed();
     const tokenAddr = await sale.token.call();
@@ -348,9 +353,9 @@ contract('Sale', (accounts) => {
       await as(owner, sale.changeStartBlock, saleConf.startBlock);
     });
 
-    it('should change the endBlock to 3 after start block', async () => {
+    it('should change the endBlock to 4 after start block', async () => {
       const sale = await Sale.deployed();
-      const expected = Number(saleConf.startBlock) + 3;
+      const expected = Number(saleConf.startBlock) + 4;
       await as(owner, sale.changeEndBlock, expected);
       const endBlock = await sale.endBlock.call();
       const errMsg = `${ownerAccessError} change the end block`;
@@ -447,6 +452,16 @@ contract('Sale', (accounts) => {
       assert.strictEqual(finalBalance.toString(10), expected.toString(10), errMsg);
     });
 
+    it('should fail to withdraw the remaining tokens', async () => {
+      try {
+        await withdrawRemainder(owner);
+        assert(false, true);
+      } catch (err) {
+        const errMsg = err.toString();
+        assert(isEVMException(err), errMsg);
+      }
+    });
+
     it('should transfer 10 tokens to Miguel.', async () => {
       const startingBalance = await getTokenBalanceOf(miguel);
       const purchaseAmount = new BN('10', 10);
@@ -540,12 +555,20 @@ contract('Sale', (accounts) => {
       assert.strictEqual(balance.toString(10), expected.toString(10), errMsg);
     });
 
-    it('should report a zero balance for the sale contract.', async () => {
+    it('should report the correct token balance for the sale contract.', async () => {
       const balance = await getTokenBalanceOf(Sale.address);
       const tokensSold = new BN('11', 10);
       const expected = tokensForSale.sub(tokensSold);
       const errMsg = 'The sale contract has the wrong number of remaining tokens';
       assert.strictEqual(balance.toString(10), expected.toString(10), errMsg);
+    });
+
+    it('Should withdraw the remaining tokens', async () => {
+      await withdrawRemainder(owner);
+      const finalBalance = await getTokenBalanceOf(Sale.address);
+      const expected = new BN(0);
+      const errMsg = 'Still tokens left after withdrawing remainder.';
+      assert.strictEqual(finalBalance.toString(10), expected.toString(10), errMsg);
     });
 
     it('should allow Miguel to transfer 10 tokens to James.', async () => {
