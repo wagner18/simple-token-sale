@@ -6,6 +6,7 @@ const fs = require('fs');
 const BN = require('bn.js');
 
 const Sale = artifacts.require('./Sale.sol');
+console.log('Token Sale Address: ', Sale.address);
 const Disbursement = artifacts.require('./Disbursement.sol');
 
 contract('Sale', (accounts) => {
@@ -326,6 +327,7 @@ contract('Sale', (accounts) => {
       const expected = 10000;
       const errMsg = `${ownerAccessError} change the end block`;
       assert.strictEqual(endBlock.toString(10), expected.toString(10), errMsg);
+      await as(owner, sale.changeEndBlock, saleConf.endBlock);
     });
 
     it('should fail to change the endBlock to 1', async () => {
