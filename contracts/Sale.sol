@@ -96,7 +96,8 @@ contract Sale {
         uint _startBlock,
         uint _freezeBlock,
         uint _totalPreBuyers,
-        uint _totalTimelockedBeneficiaries
+        uint _totalTimelockedBeneficiaries,
+        uint _endBlock
     ) {
         owner = _owner;
         wallet = _wallet;
@@ -106,12 +107,11 @@ contract Sale {
         freezeBlock = _freezeBlock;
         totalPreBuyers = _totalPreBuyers;
         totalTimelockedBeneficiaries = _totalTimelockedBeneficiaries;
+        endBlock = _endBlock;
 
         token.transfer(this, token.totalSupply());
         assert(token.balanceOf(this) == token.totalSupply());
         assert(token.balanceOf(this) == _tokenSupply);
-
-        endBlock = 9999999999999; // Arbitrarily large number that won't be reached
     }
 
     /// @dev distributePreBuyersRewards(): private utility function called by constructor
@@ -228,7 +228,7 @@ contract Sale {
         saleEnded
     {
         uint remainder = token.balanceOf(this);
-        token.transfer(owner, remainder);
+        token.transfer(wallet, remainder);
     }
 
     function changePrice(uint _newPrice)
