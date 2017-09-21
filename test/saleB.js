@@ -95,7 +95,7 @@ contract('Sale', (accounts) => {
 
     const errMsg1 = 'Sale does not have 0 tokens, but should.';
     const errMsg2 = 'Wallet did not receive withdrawn tokens from sale.';
-    assert.equal(endingBalanceSale.toString(10), 0, errMsg1);
+    assert.strictEqual(endingBalanceSale.toString(10), '0', errMsg1);
     assert.strictEqual(endingBalanceWallet.toString(10), startingBalanceSale.toString(10), errMsg2);
   });
 });
