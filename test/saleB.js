@@ -67,7 +67,7 @@ contract('Sale', (accounts) => {
 
   describe('Sale ends before all tokens are sold', () => {
     it('should stop selling tokens after the endBlock', async () => {
-      await forceMine(saleConf.endBlock.add(new BN('2', 10)));
+      await forceMine(saleConf.endBlock.add(new BN('1', 10)));
       const errMsg = 'James was able to purchase tokens after the sale ended';
 
       const startingBalance = await getTokenBalanceOf(james);
@@ -83,12 +83,12 @@ contract('Sale', (accounts) => {
   });
 
   it('should allow the owner to withdraw all unsold tokens', async () => {
-    await forceMine(saleConf.endBlock.add(new BN('2', 10)));
+    await forceMine(saleConf.endBlock.add(new BN('1', 10)));
 
     const sale = await Sale.deployed();
     const startingBalanceSale = await getTokenBalanceOf(sale.address);
     const owner = await sale.owner.call();
-    const receipt = await sale.withdrawRemainder({ from: owner });
+    await sale.withdrawRemainder({ from: owner });
     const endingBalanceSale = await getTokenBalanceOf(sale.address);
     const wallet = await sale.wallet.call();
     const endingBalanceWallet = await getTokenBalanceOf(wallet);
