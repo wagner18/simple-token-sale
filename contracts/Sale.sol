@@ -224,7 +224,6 @@ contract Sale {
 
     function withdrawRemainder()
         onlyOwner
-        saleStarted
         saleEnded
     {
         uint remainder = token.balanceOf(this);
