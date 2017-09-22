@@ -80,5 +80,22 @@ contract('Sale', (accounts) => {
       const finalBalance = await getTokenBalanceOf(james);
       assert.strictEqual(startingBalance.toString(10), finalBalance.toString(10), errMsg);
     });
+
+    it('should allow the owner to withdraw all unsold tokens', async () => {
+      await forceMine(saleConf.endBlock.add(new BN('1', 10)));
+
+      const sale = await Sale.deployed();
+      const startingBalanceSale = await getTokenBalanceOf(sale.address);
+      const owner = await sale.owner.call();
+      await sale.withdrawRemainder({ from: owner });
+      const endingBalanceSale = await getTokenBalanceOf(sale.address);
+      const wallet = await sale.wallet.call();
+      const endingBalanceWallet = await getTokenBalanceOf(wallet);
+
+      const err1 = 'Sale does not have 0 tokens, but should.';
+      const err2 = 'Wallet did not receive withdrawn tokens from sale.';
+      assert.strictEqual(endingBalanceSale.toString(10), '0', err1);
+      assert.strictEqual(endingBalanceWallet.toString(10), startingBalanceSale.toString(10), err2);
+    });
   });
 });
