@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
-import "tokens/HumanStandardToken.sol";
 import "./Disbursement.sol";
+import "./ERC661Token.sol";
 
 contract Sale {
 
@@ -18,7 +18,7 @@ contract Sale {
 
     address public owner;
     address public wallet;
-    HumanStandardToken public token;
+    ERC661Token public token;
     uint public price;
     uint public startBlock;
     uint public freezeBlock;
@@ -101,7 +101,7 @@ contract Sale {
     ) {
         owner = _owner;
         wallet = _wallet;
-        token = new HumanStandardToken(_tokenSupply, _tokenName, _tokenDecimals, _tokenSymbol);
+        token = new ERC661Token(_tokenSupply, _tokenName, _tokenDecimals, _tokenSymbol);
         price = _price;
         startBlock = _startBlock;
         freezeBlock = _freezeBlock;
@@ -220,7 +220,7 @@ contract Sale {
         require(_newOwner != 0);
         owner = _newOwner;
     }
-    
+
     function withdrawRemainder()
          onlyOwner
          saleEnded
