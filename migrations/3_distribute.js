@@ -1,18 +1,17 @@
-/* global artifacts */
-
 const Sale = artifacts.require('./Sale.sol');
 const fs = require('fs');
 const BN = require('bn.js');
+const saleAddress = '0x2b1c553d6623c23cc90ef7890f85e691a79c28f0';
 
 const distributePreBuyersTokens = async function distributePreBuyersTokens(addresses, tokens) {
-  const BATCHSIZE = 30;
+  const BATCHSIZE = 20;
   if (addresses.length !== tokens.length) {
     throw new Error('The number of pre-buyers and pre-buyer token allocations do not match');
   }
 
   const addressesChunk = addresses.slice(0, BATCHSIZE);
   const tokensChunk = tokens.slice(0, BATCHSIZE);
-  const sale = await Sale.deployed();
+  const sale = await Sale.at(saleAddress);
   await sale.distributePreBuyersRewards(addressesChunk, tokensChunk);
   console.log(`Distributed tokens to a batch of ${addressesChunk.length} pre-buyers`);
 
@@ -26,6 +25,7 @@ const distributePreBuyersTokens = async function distributePreBuyersTokens(addre
   ));
 };
 
+
 const distributeTimelockedTokens = async function distributeTimeLockedTokens(addresses, tokens,
   timelocks, periods, logs) {
   const BATCHSIZE = 4;
@@ -38,7 +38,7 @@ const distributeTimelockedTokens = async function distributeTimeLockedTokens(add
   const timelocksChunk = timelocks.slice(0, BATCHSIZE);
   const periodsChunk = periods.slice(0, BATCHSIZE);
 
-  const sale = await Sale.deployed();
+  const sale = await Sale.at(saleAddress);
   const receipt = await sale.distributeTimelockedTokens(addressesChunk, tokensChunk,
     timelocksChunk, periodsChunk);
   console.log(`Distributed a batch of ${addressesChunk.length} timelocked token chunks`);
@@ -92,33 +92,18 @@ module.exports = (deployer) => {
 
   const timeLockData = flattenTimeLockData(timelocksConf);
 
-  return deployer.deploy(Sale,
-    saleConf.owner,
-    saleConf.wallet,
-    tokenConf.initialAmount,
-    tokenConf.tokenName,
-    tokenConf.decimalUnits,
-    tokenConf.tokenSymbol,
-    saleConf.price,
-    saleConf.startBlock,
-    saleConf.freezeBlock,
-    preBuyers.length,
-    timeLockData.beneficiaries.length,
-    saleConf.endBlock,
-  )
-    /*.then(() => distributePreBuyersTokens(preBuyers, preBuyersTokens))
-    .then(() => distributeTimelockedTokens(
-      timeLockData.beneficiaries,
-      timeLockData.allocations,
-      timeLockData.disbursementDates,
-      timeLockData.disbursementPeriods,
-      [],
-    ))*/
-    .then((logs) => {
-      console.log('logs', logs)
-      if (!fs.existsSync('logs')) {
-        fs.mkdirSync('logs');
-      }
-      fs.writeFileSync('logs/logs.json', JSON.stringify(logs, null, 2));
-    });
+  distributePreBuyersTokens(preBuyers, preBuyersTokens)
+  .then(() => distributeTimelockedTokens(
+    timeLockData.beneficiaries,
+    timeLockData.allocations,
+    timeLockData.disbursementDates,
+    timeLockData.disbursementPeriods,
+    [],
+  ))
+  .then((logs) => {
+    if (!fs.existsSync('logs_distribution')) {
+      fs.mkdirSync('logs_distribution');
+    }
+    fs.writeFileSync('logs_distribution/logs_distribution.json', JSON.stringify(logs, null, 2));
+  });
 };
