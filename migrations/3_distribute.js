@@ -11,7 +11,7 @@ const distributePreBuyersTokens = async function distributePreBuyersTokens(addre
 
   const addressesChunk = addresses.slice(0, BATCHSIZE);
   const tokensChunk = tokens.slice(0, BATCHSIZE);
-  const sale = await Sale.at(saleAddress);
+  const sale = await Sale.deployed();
   await sale.distributePreBuyersRewards(addressesChunk, tokensChunk);
   console.log(`Distributed tokens to a batch of ${addressesChunk.length} pre-buyers`);
 
@@ -38,7 +38,7 @@ const distributeTimelockedTokens = async function distributeTimeLockedTokens(add
   const timelocksChunk = timelocks.slice(0, BATCHSIZE);
   const periodsChunk = periods.slice(0, BATCHSIZE);
 
-  const sale = await Sale.at(saleAddress);
+  const sale = await Sale.deployed();
   const receipt = await sale.distributeTimelockedTokens(addressesChunk, tokensChunk,
     timelocksChunk, periodsChunk);
   console.log(`Distributed a batch of ${addressesChunk.length} timelocked token chunks`);
