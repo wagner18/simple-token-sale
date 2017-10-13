@@ -1,4 +1,5 @@
-/* global artifacts*/
+/* global artifacts */
+
 const Sale = artifacts.require('./Sale.sol');
 const fs = require('fs');
 const BN = require('bn.js');
@@ -79,9 +80,7 @@ const flattenTimeLockData = function flattenTimeLockData(timeLockData) {
   return flattenedTimeLockData;
 };
 
-module.exports = (deployer) => {
-  const saleConf = JSON.parse(fs.readFileSync('./conf/sale.json'));
-  const tokenConf = JSON.parse(fs.readFileSync('./conf/token.json'));
+module.exports = () => {
   const preBuyersConf = JSON.parse(fs.readFileSync('./conf/preBuyers.json'));
   const timelocksConf = JSON.parse(fs.readFileSync('./conf/timelocks.json'));
 
