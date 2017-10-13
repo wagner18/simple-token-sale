@@ -1,5 +1,4 @@
-/* global artifacts */
-
+/* global artifacts*/
 const Sale = artifacts.require('./Sale.sol');
 const fs = require('fs');
 const BN = require('bn.js');
@@ -92,21 +91,7 @@ module.exports = (deployer) => {
 
   const timeLockData = flattenTimeLockData(timelocksConf);
 
-  return deployer.deploy(Sale,
-    saleConf.owner,
-    saleConf.wallet,
-    tokenConf.initialAmount,
-    tokenConf.tokenName,
-    tokenConf.decimalUnits,
-    tokenConf.tokenSymbol,
-    saleConf.price,
-    saleConf.startBlock,
-    saleConf.freezeBlock,
-    preBuyers.length,
-    timeLockData.beneficiaries.length,
-    saleConf.endBlock,
-  );
-  /*  .then(() => distributePreBuyersTokens(preBuyers, preBuyersTokens))
+  distributePreBuyersTokens(preBuyers, preBuyersTokens)
     .then(() => distributeTimelockedTokens(
       timeLockData.beneficiaries,
       timeLockData.allocations,
@@ -120,5 +105,4 @@ module.exports = (deployer) => {
       }
       fs.writeFileSync('logs/logs.json', JSON.stringify(logs, null, 2));
     });
-  */
 };
