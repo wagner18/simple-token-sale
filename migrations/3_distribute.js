@@ -1,7 +1,8 @@
+/* global artifacts */
+
 const Sale = artifacts.require('./Sale.sol');
 const fs = require('fs');
 const BN = require('bn.js');
-const saleAddress = '0x2b1c553d6623c23cc90ef7890f85e691a79c28f0';
 
 const distributePreBuyersTokens = async function distributePreBuyersTokens(addresses, tokens) {
   const BATCHSIZE = 20;
@@ -81,8 +82,7 @@ const flattenTimeLockData = function flattenTimeLockData(timeLockData) {
 };
 
 module.exports = (deployer) => {
-  const saleConf = JSON.parse(fs.readFileSync('./conf/sale.json'));
-  const tokenConf = JSON.parse(fs.readFileSync('./conf/token.json'));
+  console.log('deployer', deployer);
   const preBuyersConf = JSON.parse(fs.readFileSync('./conf/preBuyers.json'));
   const timelocksConf = JSON.parse(fs.readFileSync('./conf/timelocks.json'));
 
@@ -93,17 +93,17 @@ module.exports = (deployer) => {
   const timeLockData = flattenTimeLockData(timelocksConf);
 
   distributePreBuyersTokens(preBuyers, preBuyersTokens)
-  .then(() => distributeTimelockedTokens(
-    timeLockData.beneficiaries,
-    timeLockData.allocations,
-    timeLockData.disbursementDates,
-    timeLockData.disbursementPeriods,
-    [],
-  ))
-  .then((logs) => {
-    if (!fs.existsSync('logs_distribution')) {
-      fs.mkdirSync('logs_distribution');
-    }
-    fs.writeFileSync('logs_distribution/logs_distribution.json', JSON.stringify(logs, null, 2));
-  });
+    .then(() => distributeTimelockedTokens(
+      timeLockData.beneficiaries,
+      timeLockData.allocations,
+      timeLockData.disbursementDates,
+      timeLockData.disbursementPeriods,
+      [],
+    ))
+    .then((logs) => {
+      if (!fs.existsSync('logs_distribution')) {
+        fs.mkdirSync('logs_distribution');
+      }
+      fs.writeFileSync('logs_distribution/logs_distribution.json', JSON.stringify(logs, null, 2));
+    });
 };
