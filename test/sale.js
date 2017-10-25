@@ -343,7 +343,7 @@ contract('Sale', (accounts) => {
       const expected = 2666;
       const errMsg = `${ownerAccessError} change the price`;
       assert.strictEqual(price.toString(10), expected.toString(10), errMsg);
-      await as(owner, sale.changePrice, saleConf.price);
+      await as(owner, sale.changePrice, saleConf.price.toString(10));
     });
 
     it('should change the startBlock to 2666.', async () => {
@@ -353,7 +353,7 @@ contract('Sale', (accounts) => {
       const expected = 2666;
       const errMsg = `${ownerAccessError} change the start block`;
       assert.strictEqual(price.toString(10), expected.toString(10), errMsg);
-      await as(owner, sale.changeStartBlock, saleConf.startBlock);
+      await as(owner, sale.changeStartBlock, saleConf.startBlock.toString(10));
     });
 
     it('should change the endBlock to 10000', async () => {
